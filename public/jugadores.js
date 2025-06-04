@@ -11,7 +11,7 @@ let numerosAsignados = [];
 let juegoTerminado = false;
 let historial = [];
 
-// Crear cartel de ganador con botón de cerrar
+// Crear cartel de ganador sin botón de cerrar
 const cartelGanador = document.createElement('div');
 cartelGanador.id = 'cartelGanador';
 cartelGanador.style.position = 'fixed';
@@ -28,17 +28,7 @@ cartelGanador.style.display = 'none';
 cartelGanador.style.textAlign = 'center';
 
 const cartelTexto = document.createElement('div');
-const btnCerrarCartel = document.createElement('button');
-btnCerrarCartel.textContent = 'Cerrar';
-btnCerrarCartel.style.marginTop = '10px';
-btnCerrarCartel.style.padding = '5px 10px';
-btnCerrarCartel.style.fontSize = '14px';
-btnCerrarCartel.addEventListener('click', () => {
-  cartelGanador.style.display = 'none';
-});
-
 cartelGanador.appendChild(cartelTexto);
-cartelGanador.appendChild(btnCerrarCartel);
 document.body.appendChild(cartelGanador);
 
 // Crear contenedor de últimos números si no existe
@@ -71,14 +61,16 @@ function registrarJugador() {
 }
 
 btnReiniciar.addEventListener('click', () => {
-  if (juegoTerminado) return;
+  if (!juegoTerminado) return;
   const confirmacion = confirm('¿Quieres mantener la misma cartilla o generar una nueva?\n\nAceptar = misma cartilla\nCancelar = nueva cartilla');
   document.querySelectorAll('#tablaJugador td').forEach(td => td.classList.remove('resaltado'));
+  cartelGanador.style.display = 'none';
   if (!confirmacion) {
     generarCartillaAleatoria();
   } else {
     remarcarFree();
   }
+  juegoTerminado = false;
 });
 
 function generarCartillaAleatoria() {
@@ -138,23 +130,7 @@ function verificarGanador() {
   if (marcados.length === 25 && !juegoTerminado) {
     juegoTerminado = true;
     socket.emit('ganador', nombreJugador);
-    setTimeout(() => {
-      alert(`🎉 ${nombreJugador} ha ganado el bingo`);
-      preguntarSiContinuar();
-    }, 100);
   }
-}
-
-function preguntarSiContinuar() {
-  const continuar = confirm('¿Quieres seguir jugando con la misma cartilla?\nAceptar = Sí\nCancelar = Nueva cartilla');
-  juegoTerminado = false;
-  document.querySelectorAll('#tablaJugador td').forEach(td => td.classList.remove('resaltado'));
-  if (!continuar) {
-    generarCartillaAleatoria();
-  } else {
-    remarcarFree();
-  }
-  cartelGanador.style.display = 'none';
 }
 
 function remarcarFree() {
@@ -171,9 +147,6 @@ socket.on('anunciarGanador', (nombre) => {
   juegoTerminado = true;
   cartelTexto.textContent = `🏆 ¡${nombre} ha ganado el bingo!`;
   cartelGanador.style.display = 'block';
-  setTimeout(() => {
-    preguntarSiContinuar();
-  }, 300);
 });
 
 socket.on('numeroSorteado', (numero) => {
