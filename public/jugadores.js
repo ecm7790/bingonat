@@ -141,10 +141,9 @@ function verificarGanador() {
   const marcados = document.querySelectorAll('#tablaJugador td.resaltado');
   if (marcados.length !== 25) return;
 
-  // Verificar que todos los números marcados están en historial
   const validos = Array.from(marcados).every(td => {
     const n = td.dataset.num;
-    return !n || historial.includes(n); // permite "Free" que no tiene dataset.num
+    return !n || historial.includes(n); // permite "Free"
   });
 
   if (validos) {
@@ -152,8 +151,10 @@ function verificarGanador() {
     socket.emit('ganador', nombreJugador);
   } else {
     alert("❌ No puedes ganar todavía. Algunos números marcados no han sido sorteados.");
+    // 🔁 NO se marca juegoTerminado aquí
   }
 }
+
 
 
 function remarcarFree() {
