@@ -146,8 +146,7 @@ function verificarGanador() {
 
   marcados.forEach(td => {
     const n = td.dataset.num;
-   if (n && !historial.some(h => parseInt(h.replace(/[^\d]/g, '')) === parseInt(n)))
- {
+    if (n && !historial.includes(parseInt(n))) {
       td.style.backgroundColor = 'yellow'; // marcar inválido
       celdasInvalidas.push(td);
       todosValidos = false;
@@ -193,12 +192,14 @@ socket.on('anunciarGanador', (nombre) => {
 });
 
 socket.on('numeroSorteado', (numero) => {
+  console.log("Recibido:", numero); // <-- Aquí
   if (!historial.includes(numero)) {
     historial.unshift(numero);
     if (historial.length > 5) historial.pop();
     actualizarListaUltimos();
   }
 });
+
 
 socket.on('limpiarHistorial', () => {
   historial = [];
