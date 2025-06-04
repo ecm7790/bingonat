@@ -23,3 +23,4 @@ io.on('connection', (socket) => {
 http.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
+io.emit('numeroSorteado', `${letra}${num}`);
