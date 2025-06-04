@@ -147,11 +147,11 @@ function verificarGanador() {
   marcados.forEach(td => {
     const n = td.dataset.num;
     if (n && !historial.includes(parseInt(n))) {
-      td.style.backgroundColor = 'yellow'; // marcar inválido
+      td.style.backgroundColor = 'yellow';
       celdasInvalidas.push(td);
       todosValidos = false;
     } else {
-      td.style.backgroundColor = ''; // válido
+      td.style.backgroundColor = '';
     }
   });
 
@@ -159,16 +159,13 @@ function verificarGanador() {
     juegoTerminado = true;
     socket.emit('ganador', nombreJugador);
   } else {
-    // Quitar fondo amarillo tras 1.5 segundos
     setTimeout(() => {
-      celdasInvalidas.forEach(td => {
-        td.style.backgroundColor = '';
-      });
+      celdasInvalidas.forEach(td => td.style.backgroundColor = '');
     }, 1500);
-
     alert("❌ No puedes ganar todavía. Algunos números marcados no han sido sorteados.");
   }
 }
+
 
 function remarcarFree() {
   const filas = tablaJugador.querySelectorAll('tr');
@@ -191,14 +188,17 @@ socket.on('anunciarGanador', (nombre) => {
   audio.play().catch(() => {});
 });
 
-socket.on('numeroSorteado', (numero) => {
-  console.log("Recibido:", numero); // <-- Aquí
+socket.on('numeroSorteado', (numeroConLetra) => {
+  // Extraer solo el número (ej: "G52" → 52)
+  const numero = parseInt(numeroConLetra.replace(/[^\d]/g, ''));
+
   if (!historial.includes(numero)) {
     historial.unshift(numero);
     if (historial.length > 5) historial.pop();
     actualizarListaUltimos();
   }
 });
+
 
 
 socket.on('limpiarHistorial', () => {
