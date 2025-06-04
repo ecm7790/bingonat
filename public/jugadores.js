@@ -40,14 +40,19 @@ cartelGanador.appendChild(cartelTexto);
 cartelGanador.appendChild(btnCerrarCartel);
 document.body.appendChild(cartelGanador);
 
-btnUnirse.addEventListener('click', () => {
+btnUnirse.addEventListener('click', registrarJugador);
+nombreInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') registrarJugador();
+});
+
+function registrarJugador() {
   nombreJugador = nombreInput.value.trim();
   if (!nombreJugador) return alert("Por favor, escribe tu nombre.");
   nombreMostrado.textContent = `Bienvenido, ${nombreJugador}`;
   nombreInput.disabled = true;
   btnUnirse.disabled = true;
   generarCartillaAleatoria();
-});
+}
 
 btnReiniciar.addEventListener('click', () => {
   if (juegoTerminado) return;
@@ -119,17 +124,21 @@ function verificarGanador() {
     socket.emit('ganador', nombreJugador);
     setTimeout(() => {
       alert(`🎉 ${nombreJugador} ha ganado el bingo`);
-      const continuar = confirm('¿Quieres seguir jugando con la misma cartilla?\nAceptar = Sí\nCancelar = Nueva cartilla');
-      juegoTerminado = false;
-      document.querySelectorAll('#tablaJugador td').forEach(td => td.classList.remove('resaltado'));
-      if (!continuar) {
-        generarCartillaAleatoria();
-      } else {
-        remarcarFree();
-      }
-      cartelGanador.style.display = 'none';
+      preguntarSiContinuar();
     }, 100);
   }
+}
+
+function preguntarSiContinuar() {
+  const continuar = confirm('¿Quieres seguir jugando con la misma cartilla?\nAceptar = Sí\nCancelar = Nueva cartilla');
+  juegoTerminado = false;
+  document.querySelectorAll('#tablaJugador td').forEach(td => td.classList.remove('resaltado'));
+  if (!continuar) {
+    generarCartillaAleatoria();
+  } else {
+    remarcarFree();
+  }
+  cartelGanador.style.display = 'none';
 }
 
 function remarcarFree() {
@@ -146,4 +155,7 @@ socket.on('anunciarGanador', (nombre) => {
   juegoTerminado = true;
   cartelTexto.textContent = `🏆 ¡${nombre} ha ganado el bingo!`;
   cartelGanador.style.display = 'block';
+  setTimeout(() => {
+    preguntarSiContinuar();
+  }, 300);
 });
