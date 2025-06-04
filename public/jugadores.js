@@ -141,19 +141,27 @@ function verificarGanador() {
   const marcados = document.querySelectorAll('#tablaJugador td.resaltado');
   if (marcados.length !== 25) return;
 
-  const validos = Array.from(marcados).every(td => {
+  let todosValidos = true;
+
+  marcados.forEach(td => {
     const n = td.dataset.num;
-    return !n || historial.includes(n); // permite "Free"
+    if (n && !historial.includes(n)) {
+      td.style.backgroundColor = 'yellow'; // marcar inválido
+      todosValidos = false;
+    } else {
+      td.style.backgroundColor = ''; // restaurar si es válido
+    }
   });
 
-  if (validos) {
+  if (todosValidos) {
     juegoTerminado = true;
     socket.emit('ganador', nombreJugador);
   } else {
     alert("❌ No puedes ganar todavía. Algunos números marcados no han sido sorteados.");
-    // 🔁 NO se marca juegoTerminado aquí
   }
 }
+
+
 
 
 
