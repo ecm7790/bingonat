@@ -12,25 +12,6 @@ const rangos = { B: [1, 15], I: [16, 30], N: [31, 45], G: [46, 60], O: [61, 75] 
 let historial = [];
 let numerosDisponibles = Array.from({ length: 75 }, (_, i) => i + 1);
 
-// Crear lista de jugadores conectados
-const listaJugadores = document.createElement('div');
-listaJugadores.classList.add('jugadores-conectados');
-listaJugadores.innerHTML = `
-  <h3>Jugadores</h3>
-  <ul id="listaJugadores"></ul>
-`;
-document.querySelector('.contenedor').appendChild(listaJugadores);
-const listaJugadoresUL = listaJugadores.querySelector('#listaJugadores');
-
-socket.on('actualizarJugadores', (nombres) => {
-  listaJugadoresUL.innerHTML = '';
-  nombres.forEach(nombre => {
-    const li = document.createElement('li');
-    li.textContent = nombre;
-    listaJugadoresUL.appendChild(li);
-  });
-});
-
 function obtenerLetra(num) {
   if (num >= 1 && num <= 15) return 'B';
   if (num >= 16 && num <= 30) return 'I';
@@ -40,6 +21,7 @@ function obtenerLetra(num) {
 }
 
 function crearTabla() {
+  tablaBody.innerHTML = ''; // Limpia la tabla antes de recrearla
   for (let fila = 0; fila < 15; fila++) {
     const tr = document.createElement('tr');
     columnas.forEach(col => {
@@ -80,6 +62,7 @@ function actualizarListaUltimos() {
   historial.forEach((n, i) => {
     const li = document.createElement('li');
     li.textContent = `${obtenerLetra(n)}${n}`;
+    li.style.display = 'block';
     if (i === 0) li.classList.add('ultimo-numero');
     listaUltimos.appendChild(li);
   });
@@ -112,6 +95,11 @@ function sortearNumero() {
 
 socket.on('anunciarGanador', (nombre) => {
   alert(`🏆 ¡${nombre} ha ganado el bingo!`);
+});
+
+socket.on('limpiarHistorial', () => {
+  historial = [];
+  actualizarListaUltimos();
 });
 
 btnLimpiar.addEventListener('click', limpiarTodos);
