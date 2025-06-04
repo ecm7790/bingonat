@@ -10,7 +10,9 @@ const btnReiniciar = document.getElementById('reiniciarTablaBtn');
 let nombreJugador = '';
 let numerosAsignados = [];
 let juegoTerminado = false;
-let historial = [];
+let historial = [];            // historial completo (para validar ganador)
+let historialVisual = [];      // solo para mostrar últimos 5
+
 
 // Crear cartel de ganador sin botón de cerrar
 const cartelGanador = document.createElement('div');
@@ -191,12 +193,17 @@ socket.on('anunciarGanador', (nombre) => {
 
 socket.on('numeroSorteado', (numeroConLetra) => {
   const numero = parseInt(numeroConLetra.replace(/[^\d]/g, ''));
+
   if (!historial.includes(numero)) {
-    historial.unshift(numero);
-    if (historial.length > 5) historial.pop();
+    historial.unshift(numero); // completo
+
+    historialVisual.unshift(numero);
+    if (historialVisual.length > 5) historialVisual.pop();
+
     actualizarListaUltimos();
   }
 });
+
 
 socket.on('limpiarHistorial', () => {
   historial = [];
@@ -207,7 +214,7 @@ function actualizarListaUltimos() {
   const lista = document.getElementById('listaUltimos');
   if (!lista) return;
   lista.innerHTML = '';
-  historial.forEach((n, i) => {
+  historialVisual.forEach((n, i) => {
     const li = document.createElement('li');
     li.textContent = n;
     li.style.display = 'block';
@@ -215,3 +222,4 @@ function actualizarListaUltimos() {
     lista.appendChild(li);
   });
 }
+
