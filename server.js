@@ -35,20 +35,17 @@ http.listen(PORT, () => {
 let jugadores = [];
 
 io.on('connection', (socket) => {
-  socket.on('jugadorNuevo', (nombre) => {
-    if (!jugadores.includes(nombre)) {
-      jugadores.push(nombre);
-      io.emit('actualizarJugadores', jugadores);
-    }
-  });
+  console.log('📡 Cliente conectado');
 
   socket.on('ganador', (nombre) => {
+    console.log(`🏆 Ganador recibido: ${nombre}`);
     io.emit('anunciarGanador', nombre);
   });
 
-  socket.on('numeroSorteado', (n) => {
-    io.emit('numeroSorteado', `${letra}${num}`);
-
+  // ✅ Recibe ya formado desde el cliente: "B12", "N34", etc.
+  socket.on('numeroSorteado', (numeroConLetra) => {
+    console.log(`🎱 Número sorteado: ${numeroConLetra}`);
+    io.emit('numeroSorteado', numeroConLetra);
   });
 
   socket.on('limpiarHistorial', () => {
@@ -56,6 +53,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    // (opcional) eliminar jugador si quieres mantener lista en tiempo real
+    console.log('❌ Cliente desconectado');
   });
 });
+

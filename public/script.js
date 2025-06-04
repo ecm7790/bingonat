@@ -91,6 +91,7 @@ function sortearNumero() {
   if (historial.length > 5) historial.pop();
   actualizarListaUltimos();
   socket.emit('numeroSorteado', `${letra}${num}`);
+
 }
 
 socket.on('anunciarGanador', (nombre) => {
