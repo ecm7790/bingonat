@@ -1,0 +1,179 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+/* Contenedor principal más pequeño */
+.contenedor {
+  width: 90vw;
+  height: 90vh;
+  margin: 5vh auto; /* márgenes verticales */
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+  background-color: #c8e6c9cc;
+  border-radius: 20px;
+  box-shadow: 0 6px 25px rgba(76,175,80, 0.3);
+  border: 1px solid #a5d6a7;
+  box-sizing: border-box;
+}
+
+
+/* Menú lateral */
+.menu {
+  width: 240px;
+  background-color: #a5d6a7dd;
+  border-radius: 12px;
+  box-shadow: inset 1px 1px 8px #81c784cc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+}
+
+.menu h1 {
+  font-size: 20px;
+  color: #388e3c;
+  text-shadow: 0 1px 3px rgba(56,142,60,0.5);
+}
+
+.btn-pequeno {
+  padding: 5px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #388e3c;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 5px rgba(56,142,60,0.6);
+}
+
+.btn-pequeno:hover {
+  background-color: #1b5e20;
+}
+
+/* Últimos números */
+.ultimos-numeros {
+  width: 100%;
+  background-color: #ffffffcc;
+  padding: 8px;
+  border-radius: 10px;
+  box-shadow: inset 1px 1px 6px #81c784cc;
+  text-align: center;
+}
+
+.ultimos-numeros h2 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.ultimos-numeros ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.ultimos-numeros li {
+  padding: 4px 7px;
+  font-size: 18px;
+  background-color: #c8e6c9;
+  border-radius: 8px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  font-family: monospace;
+}
+
+
+.ultimo-numero {
+  background-color: #e64a19 !important;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Tabla */
+.tabla-contenedor {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  overflow: hidden;
+  height: 100%;
+}
+
+table {
+  width: 100%;
+  height: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: calc(95vh / 28); /* escalar altura en función de pantalla */
+  background-color: white;
+  box-shadow: 0 0 12px #000000aa;
+  border-radius: 10px;
+}
+
+th, td {
+  border: 1.3px solid #81c784;
+  text-align: center;
+  font-size: inherit;
+  padding: 0;
+  height: auto;
+  line-height: 1.2;
+}
+
+th {
+  background-color: #81c784;
+  color: #1b5e20;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+
+td {
+  background-color: white;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.resaltado {
+  background-color: #e64a19;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 10px 2px #ff7043cc;
+  border-color: #d84315;
+}
+.sorteo {
+  margin-top: 15px;
+  text-align: center;
+  width: 100%;
+}
+
+.numero-sorteado {
+  margin-top: 6px;
+  font-size: 28px;
+  font-weight: bold;
+  background-color: #ffffffdd;
+  color: #2e7d32;
+  border: 2px solid #81c784;
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}

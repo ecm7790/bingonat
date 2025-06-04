@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Bingo Sorteo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="contenedor">
+    <div class="menu">
+      <h1>Bingo</h1>
+      <div class="ultimos-numeros">
+        <h2>Últimos 5 números</h2>
+        <ul id="listaUltimos"></ul>
+      </div>
+      <button id="limpiarBtn" class="btn-pequeno">Limpiar</button>
+      <div class="sorteo">
+        <button id="sortearBtn" class="btn-pequeno">Siguiente Número</button>
+        <div id="numeroSorteado" class="numero-sorteado">--</div>
+      </div>
+    </div>
+    <div class="tabla-contenedor">
+      <table id="tablaBingo">
+        <thead><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

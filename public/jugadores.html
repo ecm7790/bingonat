@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Jugador - Bingo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="menu">
+    <h1>Unirse al Bingo</h1>
+    <input type="text" id="nombreJugador" placeholder="Tu nombre">
+    <button id="unirseBtn" class="btn-pequeno">Unirse</button>
+    <div id="nombreMostrado"></div>
+    <button id="reiniciarTablaBtn" class="btn-pequeno">Limpiar / Nueva Cartilla</button>
+  </div>
+  <div class="tabla-contenedor">
+    <table id="tablaJugador">
+      <thead><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="jugadores.js"></script>
+</body>
+</html>
