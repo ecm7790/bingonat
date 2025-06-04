@@ -31,6 +31,16 @@ const cartelTexto = document.createElement('div');
 cartelGanador.appendChild(cartelTexto);
 document.body.appendChild(cartelGanador);
 
+// Animación CSS para cartel
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes zoomIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+`;
+document.head.appendChild(style);
+
 // Crear contenedor de últimos números si no existe
 let lista = document.getElementById('listaUltimos');
 if (!lista) {
@@ -142,6 +152,11 @@ socket.on('anunciarGanador', (nombre) => {
   juegoTerminado = true;
   cartelTexto.textContent = `🏆 ¡${nombre} ha ganado el bingo!`;
   cartelGanador.style.display = 'block';
+  cartelGanador.style.animation = 'zoomIn 0.5s ease';
+
+  // Reproducir sonido
+  const audio = new Audio('https://www.myinstants.com/media/sounds/tada-fanfare.mp3');
+  audio.play().catch(() => {});
 });
 
 socket.on('numeroSorteado', (numero) => {
