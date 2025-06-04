@@ -41,6 +41,20 @@ cartelGanador.appendChild(cartelTexto);
 cartelGanador.appendChild(btnCerrarCartel);
 document.body.appendChild(cartelGanador);
 
+// Crear contenedor de últimos números si no existe
+let lista = document.getElementById('listaUltimos');
+if (!lista) {
+  const contenedor = document.createElement('div');
+  contenedor.className = 'ultimos-numeros';
+  const titulo = document.createElement('h3');
+  titulo.textContent = 'Últimos números';
+  lista = document.createElement('ul');
+  lista.id = 'listaUltimos';
+  contenedor.appendChild(titulo);
+  contenedor.appendChild(lista);
+  document.querySelector('.menu').appendChild(contenedor);
+}
+
 btnUnirse.addEventListener('click', registrarJugador);
 nombreInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') registrarJugador();
