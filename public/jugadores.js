@@ -142,14 +142,16 @@ function verificarGanador() {
   if (marcados.length !== 25) return;
 
   let todosValidos = true;
+  let celdasInvalidas = [];
 
   marcados.forEach(td => {
     const n = td.dataset.num;
-    if (n && !historial.includes(n)) {
+    if (n && !historial.includes(parseInt(n))) {
       td.style.backgroundColor = 'yellow'; // marcar inválido
+      celdasInvalidas.push(td);
       todosValidos = false;
     } else {
-      td.style.backgroundColor = ''; // restaurar si es válido
+      td.style.backgroundColor = ''; // válido
     }
   });
 
@@ -157,13 +159,16 @@ function verificarGanador() {
     juegoTerminado = true;
     socket.emit('ganador', nombreJugador);
   } else {
+    // Quitar fondo amarillo tras 1.5 segundos
+    setTimeout(() => {
+      celdasInvalidas.forEach(td => {
+        td.style.backgroundColor = '';
+      });
+    }, 1500);
+
     alert("❌ No puedes ganar todavía. Algunos números marcados no han sido sorteados.");
   }
 }
-
-
-
-
 
 function remarcarFree() {
   const filas = tablaJugador.querySelectorAll('tr');
