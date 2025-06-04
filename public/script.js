@@ -112,6 +112,7 @@ function sortearNumero() {
   const indice = Math.floor(Math.random() * numerosDisponibles.length);
   const num = numerosDisponibles.splice(indice, 1)[0];
   const letra = obtenerLetra(num);
+socket.emit('numeroSorteado', `${letra}${num}`);
 
   numeroSorteadoDisplay.textContent = `${letra}${num}`;
 
