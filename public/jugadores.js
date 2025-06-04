@@ -146,7 +146,8 @@ function verificarGanador() {
 
   marcados.forEach(td => {
     const n = td.dataset.num;
-    if (n && !historial.includes(parseInt(n))) {
+   if (n && !historial.some(h => parseInt(h.replace(/[^\d]/g, '')) === parseInt(n)))
+ {
       td.style.backgroundColor = 'yellow'; // marcar inválido
       celdasInvalidas.push(td);
       todosValidos = false;
