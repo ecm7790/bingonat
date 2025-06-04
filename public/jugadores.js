@@ -1,3 +1,4 @@
+
 const socket = io();
 
 const btnUnirse = document.getElementById('unirseBtn');
@@ -72,7 +73,10 @@ function registrarJugador() {
 
 btnReiniciar.addEventListener('click', () => {
   const confirmar = confirm('¿Quieres mantener la misma cartilla o generar una nueva?\n\nAceptar = misma cartilla\nCancelar = nueva cartilla');
-  document.querySelectorAll('#tablaJugador td').forEach(td => td.classList.remove('resaltado'));
+  document.querySelectorAll('#tablaJugador td').forEach(td => {
+    td.classList.remove('resaltado');
+    td.style.backgroundColor = '';
+  });
   cartelGanador.style.display = 'none';
   if (!confirmar) {
     generarCartillaAleatoria();
@@ -81,7 +85,6 @@ btnReiniciar.addEventListener('click', () => {
   }
   juegoTerminado = false;
 });
-
 
 function generarCartillaAleatoria() {
   const columnas = {
@@ -166,7 +169,6 @@ function verificarGanador() {
   }
 }
 
-
 function remarcarFree() {
   const filas = tablaJugador.querySelectorAll('tr');
   if (filas[2]) {
@@ -183,23 +185,18 @@ socket.on('anunciarGanador', (nombre) => {
   cartelGanador.style.display = 'block';
   cartelGanador.style.animation = 'zoomIn 0.5s ease';
 
-  // Reproducir sonido
   const audio = new Audio('https://www.myinstants.com/media/sounds/tada-fanfare.mp3');
   audio.play().catch(() => {});
 });
 
 socket.on('numeroSorteado', (numeroConLetra) => {
-  // Extraer solo el número (ej: "G52" → 52)
   const numero = parseInt(numeroConLetra.replace(/[^\d]/g, ''));
-
   if (!historial.includes(numero)) {
     historial.unshift(numero);
     if (historial.length > 5) historial.pop();
     actualizarListaUltimos();
   }
 });
-
-
 
 socket.on('limpiarHistorial', () => {
   historial = [];
