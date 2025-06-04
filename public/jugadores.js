@@ -72,7 +72,7 @@ function registrarJugador() {
 
 btnReiniciar.addEventListener('click', () => {
   if (!juegoTerminado) return;
-
+  const confirmar = confirm('¿Quieres mantener la misma cartilla o generar una nueva?\n\nAceptar = misma cartilla\nCancelar = nueva cartilla');
   document.querySelectorAll('#tablaJugador td').forEach(td => td.classList.remove('resaltado'));
   cartelGanador.style.display = 'none';
   if (!confirmar) {
@@ -82,6 +82,7 @@ btnReiniciar.addEventListener('click', () => {
   }
   juegoTerminado = false;
 });
+
 
 function generarCartillaAleatoria() {
   const columnas = {
