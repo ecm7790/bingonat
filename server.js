@@ -47,7 +47,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('numeroSorteado', (n) => {
-    io.emit('numeroSorteado', n);
+    io.emit('numeroSorteado', `${letra}${num}`);
+
   });
 
   socket.on('limpiarHistorial', () => {
