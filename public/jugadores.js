@@ -5,11 +5,11 @@ const nombreInput = document.getElementById('nombreJugador');
 const nombreMostrado = document.getElementById('nombreMostrado');
 const tablaJugador = document.querySelector('#tablaJugador tbody');
 const btnReiniciar = document.getElementById('reiniciarTablaBtn');
-const contenedorMenu = document.querySelector('.menu');
 
 let nombreJugador = '';
 let numerosAsignados = [];
 let juegoTerminado = false;
+let historial = [];
 
 // Crear cartel de ganador con botón de cerrar
 const cartelGanador = document.createElement('div');
@@ -40,58 +40,6 @@ btnCerrarCartel.addEventListener('click', () => {
 cartelGanador.appendChild(cartelTexto);
 cartelGanador.appendChild(btnCerrarCartel);
 document.body.appendChild(cartelGanador);
-
-// Crear lista de últimos números
-const ultimosContainer = document.createElement('div');
-ultimosContainer.classList.add('ultimos-numeros');
-ultimosContainer.innerHTML = `
-  <h3>Últimos números</h3>
-  <ul id="listaUltimos"></ul>
-`;
-contenedorMenu.appendChild(ultimosContainer);
-
-const listaUltimos = ultimosContainer.querySelector('#listaUltimos');
-let historial = [];
-
-// Crear lista de jugadores conectados
-const listaJugadores = document.createElement('div');
-listaJugadores.classList.add('jugadores-conectados');
-listaJugadores.innerHTML = `
-  <h3>Jugadores</h3>
-  <ul id="listaJugadores"></ul>
-`;
-contenedorMenu.appendChild(listaJugadores);
-const listaJugadoresUL = listaJugadores.querySelector('#listaJugadores');
-
-socket.on('numeroSorteado', (numero) => {
-  historial.unshift(numero);
-  if (historial.length > 5) historial.pop();
-  actualizarListaUltimos();
-});
-
-socket.on('limpiarHistorial', () => {
-  historial = [];
-  actualizarListaUltimos();
-});
-
-socket.on('actualizarJugadores', (nombres) => {
-  listaJugadoresUL.innerHTML = '';
-  nombres.forEach(nombre => {
-    const li = document.createElement('li');
-    li.textContent = nombre;
-    listaJugadoresUL.appendChild(li);
-  });
-});
-
-function actualizarListaUltimos() {
-  listaUltimos.innerHTML = '';
-  historial.forEach((n, i) => {
-    const li = document.createElement('li');
-    li.textContent = n;
-    if (i === 0) li.classList.add('ultimo-numero');
-    listaUltimos.appendChild(li);
-  });
-}
 
 btnUnirse.addEventListener('click', registrarJugador);
 nombreInput.addEventListener('keydown', (e) => {
@@ -213,3 +161,29 @@ socket.on('anunciarGanador', (nombre) => {
     preguntarSiContinuar();
   }, 300);
 });
+
+socket.on('numeroSorteado', (numero) => {
+  if (!historial.includes(numero)) {
+    historial.unshift(numero);
+    if (historial.length > 5) historial.pop();
+    actualizarListaUltimos();
+  }
+});
+
+socket.on('limpiarHistorial', () => {
+  historial = [];
+  actualizarListaUltimos();
+});
+
+function actualizarListaUltimos() {
+  const lista = document.getElementById('listaUltimos');
+  if (!lista) return;
+  lista.innerHTML = '';
+  historial.forEach((n, i) => {
+    const li = document.createElement('li');
+    li.textContent = n;
+    li.style.display = 'block';
+    if (i === 0) li.classList.add('ultimo-numero');
+    lista.appendChild(li);
+  });
+}
