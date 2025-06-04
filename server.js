@@ -32,3 +32,29 @@ io.on('connection', (socket) => {
 http.listen(PORT, () => {
   console.log(`✅ Servidor escuchando en http://localhost:${PORT}`);
 });
+let jugadores = [];
+
+io.on('connection', (socket) => {
+  socket.on('jugadorNuevo', (nombre) => {
+    if (!jugadores.includes(nombre)) {
+      jugadores.push(nombre);
+      io.emit('actualizarJugadores', jugadores);
+    }
+  });
+
+  socket.on('ganador', (nombre) => {
+    io.emit('anunciarGanador', nombre);
+  });
+
+  socket.on('numeroSorteado', (n) => {
+    io.emit('numeroSorteado', n);
+  });
+
+  socket.on('limpiarHistorial', () => {
+    io.emit('limpiarHistorial');
+  });
+
+  socket.on('disconnect', () => {
+    // (opcional) eliminar jugador si quieres mantener lista en tiempo real
+  });
+});

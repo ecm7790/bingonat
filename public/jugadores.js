@@ -53,10 +53,34 @@ contenedorMenu.appendChild(ultimosContainer);
 const listaUltimos = ultimosContainer.querySelector('#listaUltimos');
 let historial = [];
 
+// Crear lista de jugadores conectados
+const listaJugadores = document.createElement('div');
+listaJugadores.classList.add('jugadores-conectados');
+listaJugadores.innerHTML = `
+  <h3>Jugadores</h3>
+  <ul id="listaJugadores"></ul>
+`;
+contenedorMenu.appendChild(listaJugadores);
+const listaJugadoresUL = listaJugadores.querySelector('#listaJugadores');
+
 socket.on('numeroSorteado', (numero) => {
   historial.unshift(numero);
   if (historial.length > 5) historial.pop();
   actualizarListaUltimos();
+});
+
+socket.on('limpiarHistorial', () => {
+  historial = [];
+  actualizarListaUltimos();
+});
+
+socket.on('actualizarJugadores', (nombres) => {
+  listaJugadoresUL.innerHTML = '';
+  nombres.forEach(nombre => {
+    const li = document.createElement('li');
+    li.textContent = nombre;
+    listaJugadoresUL.appendChild(li);
+  });
 });
 
 function actualizarListaUltimos() {
@@ -80,6 +104,7 @@ function registrarJugador() {
   nombreMostrado.textContent = `Bienvenido, ${nombreJugador}`;
   nombreInput.disabled = true;
   btnUnirse.disabled = true;
+  socket.emit('jugadorNuevo', nombreJugador);
   generarCartillaAleatoria();
 }
 
