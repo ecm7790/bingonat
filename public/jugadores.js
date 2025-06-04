@@ -165,11 +165,16 @@ function verificarGanador() {
     socket.emit('ganador', nombreJugador);
   } else {
     setTimeout(() => {
-      celdasInvalidas.forEach(td => td.style.backgroundColor = '');
+      celdasInvalidas.forEach(td => {
+        td.style.backgroundColor = '';
+        td.classList.remove('resaltado'); // ✅ desmarcar la celda inválida
+      });
     }, 1500);
     alert("❌ No puedes ganar todavía. Algunos números marcados no han sido sorteados.");
   }
 }
+
+
 
 function remarcarFree() {
   const filas = tablaJugador.querySelectorAll('tr');
