@@ -1,4 +1,3 @@
-
 const socket = io();
 
 const listaJugadores = document.getElementById('listaJugadores');
@@ -8,10 +7,9 @@ const limpiarBtn = document.getElementById('limpiarBtn');
 const numeroSorteado = document.getElementById('numeroSorteado');
 const listaUltimos = document.getElementById('listaUltimos');
 
-let numerosDisponibles = Array.from({length: 75}, (_, i) => i + 1);
+let numerosDisponibles = Array.from({ length: 75 }, (_, i) => i + 1);
 let historial = [];
 
-// Inicializar tabla con todos los números del 1 al 75 en columnas B-I-N-G-O
 function generarTablaSorteo() {
   const tbody = document.querySelector('#tablaBingo tbody');
   tbody.innerHTML = '';
@@ -50,6 +48,16 @@ function actualizarListaUltimos() {
 
 btnComenzar.addEventListener('click', () => {
   socket.emit('comenzarPartida');
+
+  // 🔁 Reiniciar estado local
+  numerosDisponibles = Array.from({ length: 75 }, (_, i) => i + 1);
+  historial = [];
+  numeroSorteado.textContent = '--';
+  actualizarListaUltimos();
+  document.querySelectorAll('#tablaBingo td').forEach(td => td.classList.remove('resaltado'));
+
+  // 🧼 Avisar a jugadores para limpiar también
+  socket.emit('limpiarHistorial');
 });
 
 sortearBtn.addEventListener('click', () => {
@@ -73,7 +81,7 @@ sortearBtn.addEventListener('click', () => {
 });
 
 limpiarBtn.addEventListener('click', () => {
-  numerosDisponibles = Array.from({length: 75}, (_, i) => i + 1);
+  numerosDisponibles = Array.from({ length: 75 }, (_, i) => i + 1);
   historial = [];
   numeroSorteado.textContent = '--';
   actualizarListaUltimos();
@@ -90,5 +98,4 @@ socket.on('actualizarJugadores', (jugadores) => {
   });
 });
 
-// Cargar tabla al iniciar
 window.addEventListener('DOMContentLoaded', generarTablaSorteo);
