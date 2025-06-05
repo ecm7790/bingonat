@@ -1,5 +1,6 @@
 
 const socket = io();
+
 const listaJugadores = document.getElementById('listaJugadores');
 const btnComenzar = document.getElementById('btnComenzar');
 const sortearBtn = document.getElementById('sortearBtn');
@@ -10,37 +11,24 @@ const listaUltimos = document.getElementById('listaUltimos');
 let numerosDisponibles = Array.from({length: 75}, (_, i) => i + 1);
 let historial = [];
 
-// Emitir comenzar partida
-btnComenzar.addEventListener('click', () => {
-  socket.emit('comenzarPartida');
-});
+// Inicializar tabla con todos los números del 1 al 75 en columnas B-I-N-G-O
+function generarTablaSorteo() {
+  const tbody = document.querySelector('#tablaBingo tbody');
+  tbody.innerHTML = '';
+  for (let fila = 0; fila < 15; fila++) {
+    const tr = document.createElement('tr');
+    for (let col = 0; col < 5; col++) {
+      const td = document.createElement('td');
+      const base = col * 15;
+      const numero = base + fila + 1;
+      td.textContent = numero;
+      td.id = `cell-${numero}`;
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
 
-// Sortear número
-sortearBtn.addEventListener('click', () => {
-  if (numerosDisponibles.length === 0) return alert("¡Fin del juego!");
-  const index = Math.floor(Math.random() * numerosDisponibles.length);
-  const num = numerosDisponibles.splice(index, 1)[0];
-  const letra = obtenerLetra(num);
-  const combinado = `${letra}${num}`;
-  numeroSorteado.textContent = combinado;
-  historial.unshift(combined);
-  if (historial.length > 5) historial.pop();
-  actualizarListaUltimos();
-  socket.emit('numeroSorteado', combinado);
-});
-
-// Limpiar historial
-limpiarBtn.addEventListener('click', () => {
-  numerosDisponibles = Array.from({length: 75}, (_, i) => i + 1);
-  historial = [];
-  numeroSorteado.textContent = '--';
-  actualizarListaUltimos();
-  socket.emit('limpiarHistorial');
-  document.querySelectorAll('#tablaBingo td').forEach(td => td.classList.remove('resaltado'));
-
-});
-
-// Mostrar letra
 function obtenerLetra(num) {
   if (num <= 15) return 'B';
   if (num <= 30) return 'I';
@@ -49,7 +37,6 @@ function obtenerLetra(num) {
   return 'O';
 }
 
-// Mostrar últimos números en vertical
 function actualizarListaUltimos() {
   listaUltimos.innerHTML = '';
   historial.forEach((n, i) => {
@@ -61,7 +48,39 @@ function actualizarListaUltimos() {
   });
 }
 
-// Recibir jugadores
+btnComenzar.addEventListener('click', () => {
+  socket.emit('comenzarPartida');
+});
+
+sortearBtn.addEventListener('click', () => {
+  if (numerosDisponibles.length === 0) return alert("¡Fin del juego!");
+
+  const index = Math.floor(Math.random() * numerosDisponibles.length);
+  const num = numerosDisponibles.splice(index, 1)[0];
+  const letra = obtenerLetra(num);
+  const combinado = `${letra}${num}`;
+
+  numeroSorteado.textContent = combinado;
+
+  const celda = document.getElementById(`cell-${num}`);
+  if (celda) celda.classList.add('resaltado');
+
+  historial.unshift(combinado);
+  if (historial.length > 5) historial.pop();
+  actualizarListaUltimos();
+
+  socket.emit('numeroSorteado', combinado);
+});
+
+limpiarBtn.addEventListener('click', () => {
+  numerosDisponibles = Array.from({length: 75}, (_, i) => i + 1);
+  historial = [];
+  numeroSorteado.textContent = '--';
+  actualizarListaUltimos();
+  document.querySelectorAll('#tablaBingo td').forEach(td => td.classList.remove('resaltado'));
+  socket.emit('limpiarHistorial');
+});
+
 socket.on('actualizarJugadores', (jugadores) => {
   listaJugadores.innerHTML = '';
   jugadores.forEach(nombre => {
@@ -70,41 +89,6 @@ socket.on('actualizarJugadores', (jugadores) => {
     listaJugadores.appendChild(li);
   });
 });
-function generarTablaSorteo() {
-  const tbody = document.querySelector('#tablaBingo tbody');
-  tbody.innerHTML = '';
 
-  for (let fila = 0; fila < 15; fila++) {
-    const tr = document.createElement('tr');
-
-    for (let col = 0; col < 5; col++) {
-      const td = document.createElement('td');
-      const base = col * 15;
-      const numero = base + fila + 1;
-
-      if (numero <= base + 15) {
-        td.textContent = numero;
-        td.id = `cell-${numero}`;
-      }
-
-      tr.appendChild(td);
-    }
-
-    tbody.appendChild(tr);
-  }
-}
-
-
-function generarNumeros(min, max) {
-  const nums = [];
-  while (nums.length < 5) {
-    const n = Math.floor(Math.random() * (max - min + 1)) + min;
-    if (!nums.includes(n)) nums.push(n);
-  }
-  return nums;
-}
-
-// Llamar al cargar
+// Cargar tabla al iniciar
 window.addEventListener('DOMContentLoaded', generarTablaSorteo);
-const celda = document.getElementById(`cell-${num}`);
-if (celda) celda.classList.add('resaltado');
