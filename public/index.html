@@ -3,10 +3,39 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Bingo Sorteo</title>
+  <title>Bingo - Sorteo</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    #panelJugadores {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(0,0,0,0.85);
+      color: white;
+      padding: 10px;
+      text-align: center;
+      z-index: 9999;
+    }
+    #listaJugadores {
+      display: inline-block;
+      margin: 0 10px;
+      padding: 0;
+      list-style: none;
+    }
+    #listaJugadores li {
+      display: inline-block;
+      margin: 0 5px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
+  <div id="panelJugadores">
+    Jugadores conectados: <ul id="listaJugadores"></ul>
+    <button id="btnComenzar">Comenzar partida</button>
+  </div>
+
   <div class="contenedor">
     <div class="menu">
       <h1>Bingo</h1>

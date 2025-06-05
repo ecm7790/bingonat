@@ -5,55 +5,52 @@ const io = require('socket.io')(http);
 
 const PORT = process.env.PORT || 3000;
 
-// Servir archivos estáticos desde la carpeta public
 app.use(express.static('public'));
 
-io.on('connection', (socket) => {
-  console.log('📡 Cliente conectado');
-
-  // Evento cuando alguien gana el bingo
-  socket.on('ganador', (nombre) => {
-    console.log(`🏆 Ganador recibido: ${nombre}`);
-    io.emit('anunciarGanador', nombre);
-  });
-
-  // Evento cuando se sortea un número desde el tablero principal
-  socket.on('numeroSorteado', (numConLetra) => {
-    console.log(`🎱 Número sorteado: ${numConLetra}`);
-    io.emit('numeroSorteado', numConLetra);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('❌ Cliente desconectado');
-  });
-});
-
-// Iniciar servidor
-http.listen(PORT, () => {
-  console.log(`✅ Servidor escuchando en http://localhost:${PORT}`);
-});
 let jugadores = [];
 
 io.on('connection', (socket) => {
   console.log('📡 Cliente conectado');
 
-  socket.on('ganador', (nombre) => {
-    console.log(`🏆 Ganador recibido: ${nombre}`);
-    io.emit('anunciarGanador', nombre);
+  // Registrar nuevo jugador
+  socket.on('jugadorNuevo', (nombre) => {
+    if (!jugadores.includes(nombre)) {
+      jugadores.push(nombre);
+      console.log(`👤 Jugador conectado: ${nombre}`);
+      io.emit('actualizarJugadores', jugadores);
+    }
   });
 
-  // ✅ Recibe ya formado desde el cliente: "B12", "N34", etc.
+  // Iniciar la partida (desde sorteo)
+  socket.on('comenzarPartida', () => {
+    console.log('🚀 Partida iniciada');
+    io.emit('habilitarJuego'); // los jugadores podrán generar su tabla
+  });
+
+  // Número sorteado
   socket.on('numeroSorteado', (numeroConLetra) => {
     console.log(`🎱 Número sorteado: ${numeroConLetra}`);
     io.emit('numeroSorteado', numeroConLetra);
   });
 
+  // Ganador
+  socket.on('ganador', (nombre) => {
+    console.log(`🏆 Ganador: ${nombre}`);
+    io.emit('anunciarGanador', nombre);
+  });
+
+  // Limpiar historial
   socket.on('limpiarHistorial', () => {
+    console.log('🧹 Historial borrado');
     io.emit('limpiarHistorial');
   });
 
   socket.on('disconnect', () => {
     console.log('❌ Cliente desconectado');
+    // Opcional: eliminar nombre de jugadores[]
   });
 });
 
+http.listen(PORT, () => {
+  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+});

@@ -10,31 +10,31 @@ const btnReiniciar = document.getElementById('reiniciarTablaBtn');
 let nombreJugador = '';
 let numerosAsignados = [];
 let juegoTerminado = false;
-let historial = [];            // historial completo (para validar ganador)
-let historialVisual = [];      // solo para mostrar últimos 5
+let historial = [];           // Todos los números sorteados
+let historialVisual = [];     // Solo los últimos 5 números
+let puedeJugar = false;
 
-
-// Crear cartel de ganador sin botón de cerrar
+// Crear cartel de ganador
 const cartelGanador = document.createElement('div');
 cartelGanador.id = 'cartelGanador';
-cartelGanador.style.position = 'fixed';
-cartelGanador.style.top = '50%';
-cartelGanador.style.left = '50%';
-cartelGanador.style.transform = 'translate(-50%, -50%)';
-cartelGanador.style.padding = '20px 30px';
-cartelGanador.style.backgroundColor = '#ffcc00';
-cartelGanador.style.border = '3px solid #333';
-cartelGanador.style.fontSize = '20px';
-cartelGanador.style.borderRadius = '10px';
-cartelGanador.style.zIndex = '1000';
-cartelGanador.style.display = 'none';
-cartelGanador.style.textAlign = 'center';
-
+Object.assign(cartelGanador.style, {
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  padding: '20px 30px',
+  backgroundColor: '#ffcc00',
+  border: '3px solid #333',
+  fontSize: '20px',
+  borderRadius: '10px',
+  zIndex: '1000',
+  display: 'none',
+  textAlign: 'center'
+});
 const cartelTexto = document.createElement('div');
 cartelGanador.appendChild(cartelTexto);
 document.body.appendChild(cartelGanador);
 
-// Animación CSS para cartel
 const style = document.createElement('style');
 style.textContent = `
   @keyframes zoomIn {
@@ -70,7 +70,7 @@ function registrarJugador() {
   nombreInput.disabled = true;
   btnUnirse.disabled = true;
   socket.emit('jugadorNuevo', nombreJugador);
-  generarCartillaAleatoria();
+  // Espera a que el sorteo habilite el juego
 }
 
 btnReiniciar.addEventListener('click', () => {
@@ -97,10 +97,7 @@ function generarCartillaAleatoria() {
     O: generarNumeros(61, 75)
   };
 
-  if (!tablaJugador) {
-    console.error('No se encontró el cuerpo de la tabla del jugador (#tablaJugador tbody).');
-    return;
-  }
+  if (!tablaJugador) return;
 
   tablaJugador.innerHTML = '';
   numerosAsignados = [];
@@ -119,7 +116,7 @@ function generarCartillaAleatoria() {
         td.textContent = numero;
         td.dataset.num = numero;
         td.addEventListener('click', () => {
-          if (juegoTerminado) return;
+          if (juegoTerminado || !puedeJugar) return;
           td.classList.toggle('resaltado');
           verificarGanador();
         });
@@ -167,14 +164,12 @@ function verificarGanador() {
     setTimeout(() => {
       celdasInvalidas.forEach(td => {
         td.style.backgroundColor = '';
-        td.classList.remove('resaltado'); // ✅ desmarcar la celda inválida
+        td.classList.remove('resaltado');
       });
     }, 1500);
     alert("❌ No puedes ganar todavía. Algunos números marcados no han sido sorteados.");
   }
 }
-
-
 
 function remarcarFree() {
   const filas = tablaJugador.querySelectorAll('tr');
@@ -191,28 +186,29 @@ socket.on('anunciarGanador', (nombre) => {
   cartelTexto.textContent = `🏆 ¡${nombre} ha ganado el bingo!`;
   cartelGanador.style.display = 'block';
   cartelGanador.style.animation = 'zoomIn 0.5s ease';
-
   const audio = new Audio('https://www.myinstants.com/media/sounds/tada-fanfare.mp3');
   audio.play().catch(() => {});
 });
 
 socket.on('numeroSorteado', (numeroConLetra) => {
   const numero = parseInt(numeroConLetra.replace(/[^\d]/g, ''));
-
   if (!historial.includes(numero)) {
-    historial.unshift(numero); // completo
-
+    historial.unshift(numero);
     historialVisual.unshift(numero);
     if (historialVisual.length > 5) historialVisual.pop();
-
     actualizarListaUltimos();
   }
 });
 
-
 socket.on('limpiarHistorial', () => {
   historial = [];
+  historialVisual = [];
   actualizarListaUltimos();
+});
+
+socket.on('habilitarJuego', () => {
+  puedeJugar = true;
+  generarCartillaAleatoria();
 });
 
 function actualizarListaUltimos() {
@@ -227,4 +223,3 @@ function actualizarListaUltimos() {
     lista.appendChild(li);
   });
 }
-
