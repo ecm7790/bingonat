@@ -9,6 +9,37 @@ const listaUltimos = document.getElementById('listaUltimos');
 
 let numerosDisponibles = Array.from({ length: 75 }, (_, i) => i + 1);
 let historial = [];
+let partidaIniciada = false;
+
+// Crear cartel de ganador en la página del sorteo
+const cartelGanador = document.createElement('div');
+cartelGanador.id = 'cartelGanador';
+Object.assign(cartelGanador.style, {
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  padding: '20px 30px',
+  backgroundColor: '#ffcc00',
+  border: '3px solid #333',
+  fontSize: '20px',
+  borderRadius: '10px',
+  zIndex: '1000',
+  display: 'none',
+  textAlign: 'center'
+});
+const cartelTexto = document.createElement('div');
+cartelGanador.appendChild(cartelTexto);
+document.body.appendChild(cartelGanador);
+
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes zoomIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1); }
+  }
+`;
+document.head.appendChild(style);
 
 function generarTablaSorteo() {
   const tbody = document.querySelector('#tablaBingo tbody');
@@ -49,18 +80,19 @@ function actualizarListaUltimos() {
 btnComenzar.addEventListener('click', () => {
   socket.emit('comenzarPartida');
 
-  // 🔁 Reiniciar estado local
   numerosDisponibles = Array.from({ length: 75 }, (_, i) => i + 1);
   historial = [];
   numeroSorteado.textContent = '--';
   actualizarListaUltimos();
   document.querySelectorAll('#tablaBingo td').forEach(td => td.classList.remove('resaltado'));
-
-  // 🧼 Avisar a jugadores para limpiar también
   socket.emit('limpiarHistorial');
+
+  partidaIniciada = true;
+  sortearBtn.disabled = false;
 });
 
 sortearBtn.addEventListener('click', () => {
+  if (!partidaIniciada) return;
   if (numerosDisponibles.length === 0) return alert("¡Fin del juego!");
 
   const index = Math.floor(Math.random() * numerosDisponibles.length);
@@ -98,4 +130,17 @@ socket.on('actualizarJugadores', (jugadores) => {
   });
 });
 
-window.addEventListener('DOMContentLoaded', generarTablaSorteo);
+// Mostrar mensaje de ganador en la página del sorteo también
+socket.on('anunciarGanador', (nombre) => {
+  cartelTexto.textContent = `🏆 ¡${nombre} ha ganado el bingo!`;
+  cartelGanador.style.display = 'block';
+  cartelGanador.style.animation = 'zoomIn 0.5s ease';
+
+  const audio = new Audio('https://www.myinstants.com/media/sounds/tada-fanfare.mp3');
+  audio.play().catch(() => {});
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  generarTablaSorteo();
+  sortearBtn.disabled = true; // Bloqueado hasta que se inicie la partida
+});
