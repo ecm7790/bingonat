@@ -36,6 +36,8 @@ limpiarBtn.addEventListener('click', () => {
   numeroSorteado.textContent = '--';
   actualizarListaUltimos();
   socket.emit('limpiarHistorial');
+  document.querySelectorAll('#tablaBingo td').forEach(td => td.classList.remove('resaltado'));
+
 });
 
 // Mostrar letra
@@ -71,30 +73,27 @@ socket.on('actualizarJugadores', (jugadores) => {
 function generarTablaSorteo() {
   const tbody = document.querySelector('#tablaBingo tbody');
   tbody.innerHTML = '';
-  const columnas = {
-    B: generarNumeros(1, 15),
-    I: generarNumeros(16, 30),
-    N: generarNumeros(31, 45),
-    G: generarNumeros(46, 60),
-    O: generarNumeros(61, 75)
-  };
 
-  for (let fila = 0; fila < 5; fila++) {
+  for (let fila = 0; fila < 15; fila++) {
     const tr = document.createElement('tr');
-    ['B', 'I', 'N', 'G', 'O'].forEach((col, colIndex) => {
+
+    for (let col = 0; col < 5; col++) {
       const td = document.createElement('td');
-      if (col === 'N' && fila === 2) {
-        td.textContent = 'Free';
-        td.classList.add('resaltado');
-      } else {
-        td.textContent = columnas[col][fila >= 2 && col === 'N' ? fila - 1 : fila];
-        td.id = `cell-${td.textContent}`;
+      const base = col * 15;
+      const numero = base + fila + 1;
+
+      if (numero <= base + 15) {
+        td.textContent = numero;
+        td.id = `cell-${numero}`;
       }
+
       tr.appendChild(td);
-    });
+    }
+
     tbody.appendChild(tr);
   }
 }
+
 
 function generarNumeros(min, max) {
   const nums = [];
@@ -107,3 +106,5 @@ function generarNumeros(min, max) {
 
 // Llamar al cargar
 window.addEventListener('DOMContentLoaded', generarTablaSorteo);
+const celda = document.getElementById(`cell-${num}`);
+if (celda) celda.classList.add('resaltado');
