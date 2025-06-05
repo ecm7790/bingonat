@@ -68,3 +68,42 @@ socket.on('actualizarJugadores', (jugadores) => {
     listaJugadores.appendChild(li);
   });
 });
+function generarTablaSorteo() {
+  const tbody = document.querySelector('#tablaBingo tbody');
+  tbody.innerHTML = '';
+  const columnas = {
+    B: generarNumeros(1, 15),
+    I: generarNumeros(16, 30),
+    N: generarNumeros(31, 45),
+    G: generarNumeros(46, 60),
+    O: generarNumeros(61, 75)
+  };
+
+  for (let fila = 0; fila < 5; fila++) {
+    const tr = document.createElement('tr');
+    ['B', 'I', 'N', 'G', 'O'].forEach((col, colIndex) => {
+      const td = document.createElement('td');
+      if (col === 'N' && fila === 2) {
+        td.textContent = 'Free';
+        td.classList.add('resaltado');
+      } else {
+        td.textContent = columnas[col][fila >= 2 && col === 'N' ? fila - 1 : fila];
+        td.id = `cell-${td.textContent}`;
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+}
+
+function generarNumeros(min, max) {
+  const nums = [];
+  while (nums.length < 5) {
+    const n = Math.floor(Math.random() * (max - min + 1)) + min;
+    if (!nums.includes(n)) nums.push(n);
+  }
+  return nums;
+}
+
+// Llamar al cargar
+window.addEventListener('DOMContentLoaded', generarTablaSorteo);
